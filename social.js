@@ -44,8 +44,32 @@ class SocialNetwork {
   }
 
   getRecommendedFollows(userID, degrees) {
-    // Your code here
+    // initialise the queue with the starting user's follows
+    const queue = [...this.getFollows(userID)]; // spread operator to clone spread into array
+    const visited = new Set(queue); // to keep track of visited users (initialised with immediate follows)
+    const recommended = new Set(); // to collect recommended users
+
+    // perform BFS up to the specified degree
+    for (let i = 0; i < degrees; i++) {
+      const levelSize = queue.length // number of users to explore at this level
+      for (let j = 0; j < levelSize; j++) {
+        const currentUser = queue.shift(); // dequeue the next user
+        const follows = this.getFollows(currentUser); // get their follows
+
+        // add follows to the queue and recommended set
+        for (let follow of follows) {
+          if (!visited.has(follow) && follow !== userID) { // exclude visited and the user themselves
+            visited.add(follow); // mark as visited
+            queue.push(follow); // enqueue for further exploration
+            recommended.add(follow); // add to recommended users
+          }
+        }
+      }
+    }
+
+    return Array.from(recommended);
   }
+
 }
 
 module.exports = SocialNetwork;
